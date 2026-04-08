@@ -10,7 +10,7 @@ export async function GET() {
     );
   }
 
-  const contributions = await callQuery<unknown, Array<{ amount: number }>>(
+  const contributions = await callQuery<unknown, Array<{ amount: number; date: string }>>(
     client,
     "contributions:listAll",
     {},

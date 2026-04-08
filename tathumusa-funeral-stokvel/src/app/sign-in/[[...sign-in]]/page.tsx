@@ -16,7 +16,7 @@ export default function SignInPage() {
       title="Welcome back"
       description="Sign in to manage contributions, meetings, claims, and charity support."
     >
-      <SignIn afterSignInUrl="/dashboard" />
+      <SignIn fallbackRedirectUrl="/dashboard" />
     </AuthShell>
   );
 }

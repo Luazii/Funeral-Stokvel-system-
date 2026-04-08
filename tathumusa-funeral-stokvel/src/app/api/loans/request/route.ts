@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { callMutation, getConvexClient } from "@/lib/convex-server";
+import { callMutation, callQuery, getConvexClient } from "@/lib/convex-server";
 import { getCurrentUserProfile } from "@/lib/clerk-server";
 
 export async function POST(request: Request) {

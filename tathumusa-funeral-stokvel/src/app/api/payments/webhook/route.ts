@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 import { hasPaystackWebhookSecret, paystackConfig } from "@/lib/paystack";
 import crypto from "crypto";
 import { callMutation, callQuery, getConvexClient } from "@/lib/convex-server";
@@ -101,7 +103,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-export const config = {
-  runtime: 'edge',
-};
+

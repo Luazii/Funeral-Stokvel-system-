@@ -16,7 +16,7 @@ export default function SignUpPage() {
       title="Join Thathumusa"
       description="New members still require admin approval before full access is granted."
     >
-      <SignUp afterSignUpUrl="/onboarding" />
+      <SignUp fallbackRedirectUrl="/onboarding" />
     </AuthShell>
   );
 }

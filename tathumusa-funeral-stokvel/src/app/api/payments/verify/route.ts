@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { hasPaystackCredentials, paystack } from "@/lib/paystack";
+import { hasPaystackCredentials, verifyPaystackTransaction } from "@/lib/paystack";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -23,7 +25,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const verification = await paystack.transaction.verify(reference);
+    const verification = await verifyPaystackTransaction(reference);
 
     return NextResponse.json({
       ok: true,
