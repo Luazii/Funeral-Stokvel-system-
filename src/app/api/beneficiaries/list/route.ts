@@ -53,7 +53,3 @@ export async function GET() {
 
   return NextResponse.json({ ok: true, items });
 }
-
-export const config = {
-  runtime: 'edge',
-};

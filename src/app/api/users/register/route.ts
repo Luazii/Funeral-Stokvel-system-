@@ -51,7 +51,3 @@ export async function POST() {
 
   return NextResponse.json({ ok: true, user });
 }
-
-export const config = {
-  runtime: 'edge',
-};
