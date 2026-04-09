@@ -173,6 +173,7 @@ function PaymentCard() {
         setMessage("Payment successful – thank you for your contribution!");
         setMessageType("success");
         fetchTransactionHistory();
+        window.location.href = "/dashboard";
         return;
       }
       setCheckoutOpen(false);

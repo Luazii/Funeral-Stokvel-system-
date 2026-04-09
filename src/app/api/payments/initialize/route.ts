@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 import { hasPaystackCredentials, initializePaystackTransaction } from "@/lib/paystack";
 
 export async function POST(request: Request) {
+  const origin = new URL(request.url).origin;
   const body = (await request.json()) as {
     amount?: number;
     email?: string;
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
       email: body.email,
       reference,
       currency: "ZAR",
-      callback_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard`,
+      callback_url: `${origin}/dashboard`,
       metadata: {
         month: body.month,
       },
