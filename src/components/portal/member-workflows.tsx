@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Select, Textarea } from "@/components/ui/field";
 
-const MONTHLY_CONTRIBUTION = 250;
+const MONTHLY_CONTRIBUTION = 380;
 const MAX_PROOF_SIZE_MB = 5;
 const ALLOWED_PROOF_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
 
