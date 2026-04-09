@@ -60,15 +60,14 @@ export const create = mutation({
     joinDate: v.string(),
   },
   handler: async (ctx, args) => {
-    // Generate unique member number based on role
-    let memberNumber = "";
-    if (args.role === "admin") {
-      const adminCount = await ctx.db.query("users").filter((q) => q.eq(q.field("role"), "admin")).collect();
-      memberNumber = `ADM-${String(adminCount.length + 1).padStart(4, "0")}`;
-    } else {
-      const memberCount = await ctx.db.query("users").filter((q) => q.eq(q.field("role"), "member")).collect();
-      memberNumber = `MEM-${String(memberCount.length + 1).padStart(4, "0")}`;
-    }
+    const prefix = args.role === "admin" ? "ADM" : "MEM";
+    const allUsers = await ctx.db.query("users").collect();
+    const maxSeq = allUsers.reduce((max, u) => {
+      if (!u.memberNumber?.startsWith(prefix + "-")) return max;
+      const seq = parseInt(u.memberNumber.slice(prefix.length + 1), 10);
+      return isNaN(seq) ? max : Math.max(max, seq);
+    }, 0);
+    const memberNumber = `${prefix}-${String(maxSeq + 1).padStart(4, "0")}`;
 
     return ctx.db.insert("users", {
       clerkId: args.clerkId,
@@ -100,9 +99,13 @@ export const ensure = mutation({
       return existing._id;
     }
 
-    // Generate unique member number - new users default to "member" role
-    const memberCount = await ctx.db.query("users").filter((q) => q.eq(q.field("role"), "member")).collect();
-    const memberNumber = `MEM-${String(memberCount.length + 1).padStart(4, "0")}`;
+    const allUsers = await ctx.db.query("users").collect();
+    const maxSeq = allUsers.reduce((max, u) => {
+      if (!u.memberNumber?.startsWith("MEM-")) return max;
+      const seq = parseInt(u.memberNumber.slice(4), 10);
+      return isNaN(seq) ? max : Math.max(max, seq);
+    }, 0);
+    const memberNumber = `MEM-${String(maxSeq + 1).padStart(4, "0")}`;
 
     return ctx.db.insert("users", {
       clerkId: args.clerkId,
