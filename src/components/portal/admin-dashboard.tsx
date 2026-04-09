@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { SiteShell } from "@/components/layout/site-shell";
 import { AdminApprovalBoard } from "@/components/portal/admin-approval-board";
+import { AdminAnalytics } from "@/components/portal/admin-analytics";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { Button } from "@/components/ui/button";
@@ -505,7 +506,7 @@ export function AdminDashboard() {
               <div className="mt-8 rounded-3xl border border-zinc-200/80 bg-white/80 p-4">
                 <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">Live overview</p>
                 <p className="mt-3 text-sm text-zinc-600">
-                  Nothing to show here yet.
+                  Financial analytics, contribution compliance, loan pipeline, attendance, and fines recovery are visualised below.
                 </p>
               </div>
             </div>
@@ -926,6 +927,15 @@ export function AdminDashboard() {
             </div>
           </Card>
         </section>
+
+        <AdminAnalytics
+          financeSummary={financeSummary}
+          attendanceOverview={attendanceOverview}
+          contributionList={contributionList}
+          loanList={loanList}
+          claimList={claimList}
+          finesList={finesList}
+        />
 
         <section>
           <AdminApprovalBoard />
