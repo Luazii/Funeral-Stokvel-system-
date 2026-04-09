@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     amount?: number;
     date?: string;
     month?: string;
+    status?: "pending" | "paid" | "late" | "missed";
   };
 
   const client = getConvexClient();
@@ -43,26 +44,35 @@ export async function POST(request: Request) {
       clerkId: profile.userId,
     }))?._id;
 
+  const contributionStatus = body.status ?? "paid";
+  const contributionMonth = (body.month ?? body.date)?.slice(0, 7);
+  let hadPaidForMonth = false;
+
+  if (memberId && contributionStatus === "paid" && contributionMonth) {
+    const contributions = await callQuery<
+      unknown,
+      Array<{ date: string; month?: string; status: string }>
+    >(client, "contributions:listByMember", {
+      memberId,
+    });
+    hadPaidForMonth = contributions.some((contribution) => {
+      const existingMonth = (contribution.month ?? contribution.date).slice(0, 7);
+      return contribution.status === "paid" && existingMonth === contributionMonth;
+    });
+  }
+
   await callMutation(client, "contributions:create", {
     memberId: memberId ?? (profile.userId as unknown as string),
     amount: body.amount,
     date: body.date,
     month: body.month,
-    status: "paid",
+    status: contributionStatus,
   });
 
   let pointsAdded = 0;
-  if (memberId) {
-    // Check if member has already contributed this month
-    const contributions = await callQuery<unknown, Array<{ date: string }>>(client, "contributions:listByMember", {
-      memberId,
-    });
-    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-    const hasContributedThisMonth = contributions.some(contrib => contrib.date.startsWith(currentMonth));
-    if (!hasContributedThisMonth) {
-      await callMutation(client, "users:addPoints", { userId: memberId, points: 3 });
-      pointsAdded = 3;
-    }
+  if (memberId && contributionStatus === "paid" && !hadPaidForMonth) {
+    await callMutation(client, "users:addPoints", { userId: memberId, points: 3 });
+    pointsAdded = 3;
   }
 
   return NextResponse.json({

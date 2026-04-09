@@ -10,19 +10,25 @@ export async function GET() {
     );
   }
 
-  const contributions = await callQuery<unknown, Array<{ amount: number; date: string }>>(
+  const contributions = await callQuery<
+    unknown,
+    Array<{ amount: number; date: string; month?: string; status: string }>
+  >(
     client,
     "contributions:listAll",
     {},
   );
 
-  const totalContributions = contributions.reduce((sum, entry) => sum + entry.amount, 0);
-  const monthlyTotalsMap = contributions.reduce<Record<string, number>>((acc, entry) => {
-    const date = new Date(entry.date);
-    if (Number.isNaN(date.getTime())) {
+  const paidContributions = contributions.filter((entry) => entry.status === "paid");
+  const totalContributions = paidContributions.reduce((sum, entry) => sum + entry.amount, 0);
+  const monthlyTotalsMap = paidContributions.reduce<Record<string, number>>((acc, entry) => {
+    const key =
+      typeof entry.month === "string" && entry.month.length >= 7
+        ? entry.month.slice(0, 7)
+        : entry.date.slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(key)) {
       return acc;
     }
-    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
     acc[key] = (acc[key] ?? 0) + entry.amount;
     return acc;
   }, {});

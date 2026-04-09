@@ -29,14 +29,17 @@ export async function GET() {
       clerkId: profile.userId,
     }))?._id;
 
-  const all = await callQuery<unknown, Array<{ amount: number; memberId: string }>>(
+  const all = await callQuery<
+    unknown,
+    Array<{ amount: number; memberId: string; status: string }>
+  >(
     client,
     "contributions:listAll",
     {},
   );
 
   const totalPaid = all
-    .filter((entry) => entry.memberId === memberId)
+    .filter((entry) => entry.memberId === memberId && entry.status === "paid")
     .reduce((sum, entry) => sum + entry.amount, 0);
 
   return NextResponse.json({ ok: true, totalPaid });

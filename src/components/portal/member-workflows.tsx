@@ -342,7 +342,7 @@ function PaymentCard() {
           type="submit"
           disabled={isLoading || checkoutOpen || alreadyPaidForSelectedMonth || !paystackConfigured}
         >
-          {isLoading ? "Opening checkout..." : "Pay R250 with Paystack"}
+          {isLoading ? "Opening checkout..." : `Pay R${MONTHLY_CONTRIBUTION} with Paystack`}
         </Button>
         {!paystackConfigured ? (
           <p className="text-xs text-amber-700">Paystack not configured. Add NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY to .env.local.</p>

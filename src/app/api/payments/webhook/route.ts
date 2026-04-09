@@ -53,26 +53,17 @@ export async function POST(request: NextRequest) {
           const user = await callQuery<unknown, { _id: string } | null>(client, "users:getByEmail", {
             email: customer.email,
           });
-          if (user) {
-            // Log the contribution
-            await callMutation(client, "contributions:create", {
+          if (user && typeof amount === "number") {
+            await callMutation(client, "contributions:recordPayment", {
               memberId: user._id,
               amount: amount / 100,
-              date: new Date().toISOString(),
-              month: metadata?.month,
-              status: "paid",
+              date:
+                event.data.paid_at ??
+                event.data.transaction_date ??
+                new Date().toISOString(),
+              month: typeof metadata?.month === "string" ? metadata.month : undefined,
               paymentReference: reference,
             });
-
-            // Check if already contributed this month and add points if not
-            const contributions = await callQuery<unknown, Array<{ date: string }>>(client, "contributions:listByMember", {
-              memberId: user._id,
-            });
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            const hasContributedThisMonth = contributions.some(contrib => contrib.date.startsWith(currentMonth));
-            if (!hasContributedThisMonth) {
-              await callMutation(client, "users:addPoints", { userId: user._id, points: 3 });
-            }
           }
         }
 
@@ -103,4 +94,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
